@@ -14,11 +14,13 @@ protected:
   PTDatLink pLast; // последнее звено
   PTDatLink pCurrLink; // текущее звено
   PTDatLink pPrevLink; // звено перед текущим
-  PTDatLink pStop; // значение указателя, означающего конец списка (=NULL)
+  PTDatLink pStop; // значение указателя, означающего конец списка (=NULL) //Я его не использую.
   int CurrPos; // номер текущего знена (нумерация от 0)
   int ListLen; // количество звеньев в списке
   void DelLink(PTDatLink pLink); // удаление звена
 public:
+
+
   TDatList();
   TDatList(PTDatValue* listElems, int listElemsCount);
   ~TDatList() { DelList(); }
