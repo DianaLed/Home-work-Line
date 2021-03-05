@@ -18,7 +18,6 @@ protected:
   PTDatLink pStop; // значение указателя, означающего конец списка (=NULL) //Я его не использую.
   int CurrPos; // номер текущего знена (нумерация от 0)
   int ListLen; // количество звеньев в списке
-  void DelLink(PTDatLink pLink); // удаление звена
 public:
 
 
@@ -29,7 +28,7 @@ public:
   // доступ --------------------------------------------------------------
   PTDatValue GetDatValue(TLinkPos mode = CURRENT) const; // значение
   int GetListLength() const { return ListLen; } // к-во звеньев
-  bool IsEmpty() const { return pFirst == pStop; } // список пуст?
+  bool IsEmpty() const { return  (ListLen == 0); } // список пуст?
 
   // навигация ------------------------------------------------------------
   int SetCurrentPos(int pos); // установить текущее звено

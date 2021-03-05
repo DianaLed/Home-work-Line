@@ -42,31 +42,31 @@ void main()
   int cur1 = st.GetCurrentPos();
   cout << "Текущий элемент: " << cur1 << endl;
   st.InsCurrent(iVal3);
- /* st.InsFirst(iVal1);
+  st.InsFirst(iVal1);
   st.InsLast(iVal2);
-  printList(st);*/
-  // Взять текущий элемент списка
+  printList(st);
+   //Взять текущий элемент списка
 
-  //cout << "\nВзять текущий элемент списка ------------------------------------------" << endl;
-  //st.Reset();
-  //st.GoNext();
-  //st.GoNext();
-  //int cur4 = st.GetCurrentPos();
+  cout << "\nВзять текущий элемент списка ------------------------------------------" << endl;
+  st.Reset();
+  st.GoNext();
+  st.GoNext();
+  int cur4 = st.GetCurrentPos();
 
-  //cout << "Текущий элемент: " << cur4 << endl;
-  //PTItemValue iVal4 = (PTItemValue)(st.GetDatValue(CURRENT));
-  //cout << "Элемент = " << iVal4->GetValue() << endl;
-  //printList(st);
-  //// Удалить элемент списка
-  //cout << "\nУдалить элементы списка: текущий, первый ----------------------------" << endl;
-  //st.Reset();
-  //st.GoNext();
-  //st.GoNext();
-  //int cur5 = st.GetCurrentPos();
-  //cout << "Текущий элемент: " << cur5 << endl;
-  //st.DelCurrent();
-  //st.DelFirst();
-  //printList(st);
+  cout << "Текущий элемент: " << cur4 << endl;
+  PTItemValue iVal4 = (PTItemValue)(st.GetDatValue(CURRENT));
+  cout << "Элемент = " << iVal4->GetValue() << endl;
+  printList(st);
+  // Удалить элемент списка
+  cout << "\nУдалить элементы списка: текущий, первый ----------------------------" << endl;
+  st.Reset();
+  st.GoNext();
+  st.GoNext();
+  int cur5 = st.GetCurrentPos();
+  cout << "Текущий элемент: " << cur5 << endl;
+  st.DelFirst();
+  st.DelCurrent();
+  printList(st);
 }
 
 //#include <iostream>

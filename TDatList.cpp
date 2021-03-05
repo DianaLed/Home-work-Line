@@ -1,9 +1,5 @@
 #include "TDatList.h"
 
-void TDatList::DelLink(PTDatLink pLink)
-{
-
-}
 
 TDatList::TDatList()
 {
@@ -50,53 +46,65 @@ PTDatValue TDatList::GetDatValue(TLinkPos mode) const
 void TDatList::DelFirst(void)
 {
   if (!IsEmpty()){
-    SetCurrentPos(1);
-    PTDatLink* zn = new PTDatLink[ListLen - 1];
-    for (int i = 0; i < ListLen - 2; i++) {
-      zn[i] = pCurrLink;
+    if (ListLen >1) {
+      Reset();
       GoNext();
+      pFirst = pCurrLink;
+      delete pPrevLink->pValue;
+      //delete pPrevLink->pNext;
+      ListLen--;
     }
-    SetCurrentPos(0);
-    delete[] pFirst->pNext; //вроде как удалили массив с числами
-    ListLen--;              //а может только один указатель...
-    pFirst = zn[0];
-    pLast = zn[ListLen - 1];
-    pCurrLink = pFirst;
-    pPrevLink->pNext = pFirst;
-    CurrPos = 0;
+    else {
+      DelList();
+    }
     }
   }
 
 void TDatList::DelCurrent(void)
 {
   if (!IsEmpty()) {
-    int point = CurrPos - 1;
-    PTDatLink* zn = new PTDatLink[ListLen - 1];
-
-    for (int i = 0; i < ListLen - 2; i++) {
-      zn[i] = pCurrLink;
-      //если след элемент мы удаляем, то мы перезабиваем в pointer адрес на след элемент.
-      if (point == CurrPos) {
-        GoNext();
-        zn[i]->pNext = pCurrLink->pNext;
-      }
-      GoNext();
+    if (CurrPos == ListLen - 1) {
+      pLast = pPrevLink;
+      delete pCurrLink->pValue;
+      delete pCurrLink->pNext; //???
+      pLast->pNext = NULL;
+      ListLen--;
+      Reset();
     }
-    //забиваем новый массив звеньев
-    SetCurrentPos(0);
-    delete[] pFirst->pNext; //вроде как все удалили
-    ListLen--;
-    pFirst = zn[0];
-    pLast = zn[ListLen - 1];
-    Reset();
+    if (CurrPos == 1) DelFirst();
+    else {
+      pPrevLink->pNext = pCurrLink->pNext;
+      delete pCurrLink->pValue;
+      //delete pCurrLink->pNext; //???
+      ListLen--;
+    }
+   
   }
 }
 
 void TDatList::DelList(void)
 {
-  if (!IsEmpty()) {
-    delete[] pFirst->pNext;
+  Reset();
+  if (ListLen > 1) { //если много звеньев
+    for (int i = 1; i < ListLen; i++) {
+      GoNext();
+      delete pPrevLink->pValue;
+    }
+    delete pLast->pValue;
+    delete pFirst->pNext;
   }
+  else 
+  if(ListLen==1)
+  { //если одно звено
+    delete pFirst->pValue;
+    delete pFirst->pNext;
+  }
+
+  //Reset();
+  //delete pFirst->pValue;
+  //delete pFirst->pNext;
+  ListLen = 0;
+  CurrPos = 0;
 }
 
 int TDatList::SetCurrentPos(int pos)
@@ -135,7 +143,7 @@ bool TDatList::IsListEnded(void) const
 
 int TDatList::GoNext(void)
 {
-  if (!IsListEnded()) {
+  if ((!IsListEnded())&&(!IsEmpty())) {
     PTDatLink next = pCurrLink->pNext; //???
     pPrevLink = pCurrLink;
     pCurrLink = next;
@@ -147,41 +155,33 @@ int TDatList::GoNext(void)
 
 void TDatList::InsFirst(PTDatValue pVal)
 {
-  PTDatLink* zven= new PTDatLink[ListLen +1];
+  PTDatLink* zven = new PTDatLink;
+  zven[0] = new TDatLink();
   zven[0]->pValue = pVal;
   zven[0]->pNext = pFirst;
-  Reset();
-  GoNext();
-  for (int i = 1; i < ListLen + 1; i++) {
-    zven[i] = pCurrLink;
-    GoNext();
-  }
-  delete[] pFirst->pNext;
   pFirst = zven[0];
-  pLast = zven[ListLen];
   ListLen++;
 }
 
 void TDatList::InsLast(PTDatValue pVal)
 {
-  PTDatLink* zven = new PTDatLink[ListLen - 1];
-  Reset();
-  GoNext();
-  for (int i = 0; i < ListLen - 1; i++) {
-    zven[i] = pCurrLink;
-    GoNext();
-  }
-  ListLen--;
-  zven[ListLen-1]->pValue = pVal;
-  zven[ListLen - 1]->pNext = NULL;
-  delete[] pFirst->pNext;
-  pFirst = zven[0];
-  pLast = zven[ListLen];
+  PTDatLink* zven = new PTDatLink;
+  zven[0] = new TDatLink();
+  zven[0]->pValue = pVal;
+  zven[0]->pNext = NULL;
+  pLast->pNext = zven[0];
+  pLast = zven[0];
+  ListLen++;
 }
 
-void TDatList::InsCurrent(PTDatValue pVal)
+void TDatList::InsCurrent(PTDatValue pVal)// вставить перед текущим
 {
-
+  PTDatLink* zven = new PTDatLink;
+  zven[0] = new TDatLink();
+  zven[0]->pValue = pVal;
+  zven[0]->pNext = pCurrLink;
+  pPrevLink->pNext = zven[0];
+  ListLen++;
 }
 
 
@@ -196,12 +196,14 @@ ostream& operator<<(ostream& os, TDatList& q)
   os << "NULL\n";
   q.Reset();
   os << "Вывод значений: ";
-  PTItemValue pVal;
-  pVal = (PTItemValue)q.pCurrLink->GetDatValue();
-  os << pVal->GetValue();
-  while (q.GoNext()) {
+  if (q.ListLen > 0) {
+    PTItemValue pVal;
     pVal = (PTItemValue)q.pCurrLink->GetDatValue();
-    os << " -> " << pVal->GetValue();
+    os << pVal->GetValue();
+    while (q.GoNext()) {
+      pVal = (PTItemValue)q.pCurrLink->GetDatValue();
+      os << " -> " << pVal->GetValue();
+    }
   }
   os << "\n";
   return os;
