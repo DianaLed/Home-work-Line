@@ -17,10 +17,12 @@ TDatList::TDatList(PTDatValue* listElems, int listElemsCount)
   if (listElemsCount > 0) {
     PTDatLink* zven;
     zven = new PTDatLink[listElemsCount];
-    zven[listElemsCount - 1]->pValue = listElems[listElemsCount - 1];
+    for (int i = 0; i < listElemsCount; i++) {
+      zven[i] = new TDatLink();
+      zven[i]->pValue = listElems[i];
+    }
     zven[listElemsCount - 1]->pNext = NULL;
     for (int i = listElemsCount-2; i >=0; i--) {
-      zven[i]->pValue = listElems[i];
       zven[i]->pNext = zven[i + 1];
     }
     ListLen = listElemsCount;
@@ -28,8 +30,7 @@ TDatList::TDatList(PTDatValue* listElems, int listElemsCount)
     pFirst = zven[0];
     pLast= zven[listElemsCount - 1];
     pCurrLink = pFirst;
-    pStop->pNext = NULL;
-    pPrevLink->pNext = pFirst;
+    pPrevLink = pLast;
   }
   else {
     pFirst = pCurrLink = pPrevLink = pLast = pStop = NULL;
@@ -38,6 +39,12 @@ TDatList::TDatList(PTDatValue* listElems, int listElemsCount)
     cout << "ERROR in TDatList::TDatList(PTDatValue* listElems " << listElems[0] << "... int listElemsCount=";
     cout << listElemsCount << ".\n";
   }
+}
+
+PTDatValue TDatList::GetDatValue(TLinkPos mode) const
+{
+  PTDatValue a=pCurrLink->pValue;
+  return a;
 }
 
 void TDatList::DelFirst(void)
@@ -107,10 +114,15 @@ int TDatList::SetCurrentPos(int pos)
   return 0;
 }
 
+int TDatList::GetCurrentPos(void) const
+{
+  return CurrPos;
+}
+
 int TDatList::Reset(void)
 {
   pCurrLink = pFirst;
-  pPrevLink->pNext = pCurrLink;
+  pPrevLink = pLast;
   CurrPos = 0;
   return 0;
 }
@@ -167,15 +179,30 @@ void TDatList::InsLast(PTDatValue pVal)
   pLast = zven[ListLen];
 }
 
+void TDatList::InsCurrent(PTDatValue pVal)
+{
+
+}
+
 
 
 ostream& operator<<(ostream& os, TDatList& q)
 {
   q.Reset();
-  os << "Вывод цепочки: ";
+  os << "Вывод адресов: ";
   while (q.GoNext()) {
     os << q.pCurrLink->GetDatValue() << "-> ";
   }
   os << "NULL\n";
+  q.Reset();
+  os << "Вывод значений: ";
+  PTItemValue pVal;
+  pVal = (PTItemValue)q.pCurrLink->GetDatValue();
+  os << pVal->GetValue();
+  while (q.GoNext()) {
+    pVal = (PTItemValue)q.pCurrLink->GetDatValue();
+    os << " -> " << pVal->GetValue();
+  }
+  os << "\n";
   return os;
 }

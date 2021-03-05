@@ -21,9 +21,11 @@ public:
     if (pLink != nullptr)
       pLink->pNext = p;
   }
-  PTDatLink& operator= (const PTDatLink& p) {
+  PTDatLink& operator= (const PTDatLink& p)
+  {
     pValue = p->pValue;
     pNext = p->pNext;
+    //return *this;
   }
   friend class TDatList;
 };

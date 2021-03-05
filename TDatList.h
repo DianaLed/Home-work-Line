@@ -4,6 +4,7 @@
 using namespace std;
 
 #include "TDatlink.h"
+#include "TItemValue.h"
 enum TLinkPos { FIRST, CURRENT, LAST };
 class TDatList;
 typedef TDatList* PTDatList;

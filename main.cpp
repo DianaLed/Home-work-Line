@@ -7,12 +7,7 @@ using namespace std;
 
 void printList(TDatList& st)
 {
-  PTItemValue pVal;
-  for (st.Reset(); !st.IsListEnded(); st.GoNext())
-  {
-   /* pVal = (PTItemValue)st.GetDatValue();
-    cout << pVal->GetValue() << " ";*/
-  }
+  cout << st << " ";
   cout << endl;
 }
 
@@ -33,23 +28,24 @@ void main()
   TDatList st(listElems, elemsCount);
   // печать списка
   printList(st);
-  //// Вставить элементы списка
-  //cout << "\nВставить элементы списка: 11 - в начало, 12 - в конец, 13 - перед текущим ----" << endl;
-  //st.Reset();
-  //PTItemValue iVal1 = new TItemValue(11);
-  //PTItemValue iVal2 = new TItemValue(12);
-  //PTItemValue iVal3 = new TItemValue(13);
-  //int cur2 = st.GetCurrentPos();
-  //cout << "Текущий элемент: " << cur2 << endl;
-  //st.GoNext();
-  //st.GoNext();
-  //int cur1 = st.GetCurrentPos();
-  //cout << "Текущий элемент: " << cur1 << endl;
-  //st.InsCurrent(iVal3);
-  //st.InsFirst(iVal1);
-  //st.InsLast(iVal2);
-  //printList(st);
-  //// Взять текущий элемент списка
+  // Вставить элементы списка
+  cout << "\nВставить элементы списка: 11 - в начало, 12 - в конец, 13 - перед текущим ----" << endl;
+  st.Reset();
+  PTItemValue iVal1 = new TItemValue(11);
+  PTItemValue iVal2 = new TItemValue(12);
+  PTItemValue iVal3 = new TItemValue(13);
+  int cur2 = st.GetCurrentPos();
+  cout << "Текущий элемент: " << cur2 << endl;
+  st.GoNext();
+  st.GoNext();
+
+  int cur1 = st.GetCurrentPos();
+  cout << "Текущий элемент: " << cur1 << endl;
+  st.InsCurrent(iVal3);
+ /* st.InsFirst(iVal1);
+  st.InsLast(iVal2);
+  printList(st);*/
+  // Взять текущий элемент списка
 
   //cout << "\nВзять текущий элемент списка ------------------------------------------" << endl;
   //st.Reset();
