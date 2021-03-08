@@ -15,7 +15,6 @@ protected:
   PTDatLink pLast; // последнее звено
   PTDatLink pCurrLink; // текущее звено
   PTDatLink pPrevLink; // звено перед текущим
-  PTDatLink pStop; // значение указателя, означающего конец списка (=NULL) //Я его не использую.
   int CurrPos; // номер текущего знена (нумерация от 0)
   int ListLen; // количество звеньев в списке
 public:
@@ -24,6 +23,8 @@ public:
   TDatList();
   TDatList(PTDatValue* listElems, int listElemsCount);
   ~TDatList() { DelList(); }
+
+  //TDatList& operator=(TDatList& q);
 
   // доступ --------------------------------------------------------------
   PTDatValue GetDatValue(TLinkPos mode = CURRENT) const; // значение
@@ -42,14 +43,14 @@ public:
   int GoNext(void); // сдвиг вправо текущего звена
 
   // вставка звеньев ------------------------------------------------------
-  void InsFirst(PTDatValue pVal = nullptr); // вставить перед первым
-  void InsLast(PTDatValue pVal = nullptr); // вставить последним
-  void InsCurrent(PTDatValue pVal = nullptr); // вставить перед текущим
+  void InsFirst(PTDatValue pVal = nullptr); // вставить перед первым //указывать будет на 1
+  void InsLast(PTDatValue pVal = nullptr); // вставить последним //указвать будет на последнее
+  void InsCurrent(PTDatValue pVal = nullptr); // вставить перед текущим //указывает на вставленный
 
   // удаление звеньев
-  void DelFirst(void); // удалить первое звено (#Л2)
-  void DelCurrent(void); // удалить текущее звено (#П2)
-  void DelList(void); // удалить весь список
+  void DelFirst(void); // удалить первое звено (#Л2) //указывать будет на 0е
+  void DelCurrent(void); // удалить текущее звено (#П2) //указывать будет на след
+  void DelList(void); // удалить весь список 
 
   friend ostream& operator<<(ostream& os, TDatList& q);
 };
