@@ -46,6 +46,8 @@ public:
   void InsFirst(PTDatValue pVal = nullptr); // вставить перед первым //указывать будет на 1
   void InsLast(PTDatValue pVal = nullptr); // вставить последним //указвать будет на последнее
   void InsCurrent(PTDatValue pVal = nullptr); // вставить перед текущим //указывает на вставленный
+  void change(int nom1, int nom2);
+  void sortlist();
 
   // удаление звеньев
   void DelFirst(void); // удалить первое звено (#Л2) //указывать будет на 0е

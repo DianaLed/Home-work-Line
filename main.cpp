@@ -83,17 +83,23 @@ void main()
   int ms1[][2] = { {1, 543}, {3, 432}, {5, 321}, {7, 210}, {9, 100} }; 
   int mn1 = sizeof(ms1) / (2 * sizeof(int));
   TPolinom p(ms1, mn1);
-  cout << "1 полином" << endl << p;
+
+  cout << "1 полином" << endl << p << endl;
+
   TMonom a(5, 111);
   PTMonom b = &a;
   p.SetMonom(b);
-  cout << "1 полином" << endl << p;
-  /*int ms2[][2] = { {2, 643}, {4, 432}, {-5, 321}, {8, 110}, {10, 50} };
+
+  cout << "1 полином" << endl << p << endl;
+
+  int ms2[][2] = { {2, 643}, {4, 432}, {-5, 321}, {8, 110}, {10, 50} };
   int mn2 = sizeof(ms2) / (2 * sizeof(int));
   TPolinom q(ms2, mn2);
+
   cout << "2 полином" << endl << q << endl;
+
   TPolinom r = p + q;
-  cout << "Полином-результат + " << endl << r;*/
+  /*cout << "Полином-результат + " << endl << r;*/
   /*TPolinom r1 = r;
   cout << "Полином-результат = " << endl << r1;
   TPolinom c(r);
