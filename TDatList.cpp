@@ -62,7 +62,7 @@ void TDatList::DelFirst(void)
       Reset();
       GoNext();
       pFirst = pCurrLink;
-      //delete pPrevLink->pValue;
+      delete pPrevLink->pNext;
       pPrevLink->pNext=NULL;
       pCurrLink = pFirst;
       pPrevLink = pLast;
@@ -77,50 +77,39 @@ void TDatList::DelFirst(void)
 void TDatList::DelCurrent(void)
 {
   if (!IsEmpty()) {
-    if(ListLen==1)DelFirst();
+    if(CurrPos == 0|| ListLen==1) DelFirst();
     else
     if (CurrPos == ListLen - 1) {
       pLast = pPrevLink;
-      delete pCurrLink->pValue;
+      delete pCurrLink->pNext;
       pCurrLink->pNext = NULL;
       pLast->pNext = NULL;
       ListLen--;
       Reset();
+    } else {
+      pPrevLink->pNext = pCurrLink->pNext;
+      delete pCurrLink;
+      pCurrLink = pPrevLink->pNext;
+      ListLen--;
     }
-    else if (CurrPos == 1) 
-      DelFirst();
-             else {
-               pPrevLink->pNext = pCurrLink->pNext;
-               //delete pCurrLink->pValue;
-               GoNext();
-               pPrevLink->pNext = NULL;
-               ListLen--;
-             }
   }
 }
 
 void TDatList::DelList(void)
 {
-  Reset();
   if (ListLen > 1) { //если много звеньев
-    for (int i = 1; i < ListLen; i++) {
-      GoNext();
-      //delete pPrevLink->pValue;
-      pPrevLink->pNext = NULL;
+    for (int i = ListLen-1; i > 0; i--) {
+      SetCurrentPos(i);
+      delete pPrevLink->pNext;
     }
-    //delete pLast->pValue;
-    pFirst->pNext = NULL;
+    SetCurrentPos(0);
+    delete pCurrLink;
   }
   else 
   if(ListLen==1)
   { //если одно звено
-    //delete pFirst->pValue;
-    pFirst->pNext = NULL;
+    delete pCurrLink;
   }
-
-  //Reset();
-  //delete pFirst->pValue;
-  //delete pFirst->pNext;
   ListLen = 0;
   CurrPos = 0;
 }
@@ -232,20 +221,20 @@ void TDatList::change(int nom1, int nom2)
   pCurrLink->pValue = b.pValue;
 }
 
-//void TDatList::sortlist()
-//{
-//  TDatLink max;
-//  for (int j = 0; j < ListLen-1; j++) { //ставим на это место max
-//    SetCurrentPos(j);
-//    max = *pCurrLink;
-//    GoNext();
-//    for (int i = j+1; i < ListLen; i++) {
-//      if (*pCurrLink > max) //не сможем реализовать
-//        change(j, i);
-//      GoNext();
-//    }
-//  }
-//}
+void TDatList::sortlist()
+{
+  TDatLink max;
+  for (int j = 0; j < ListLen-1; j++) { //ставим на это место max
+    SetCurrentPos(j);
+    max = *pCurrLink;
+    GoNext();
+    for (int i = j+1; i < ListLen; i++) {
+      if (*pCurrLink > max) //не сможем реализовать
+        change(j, i);
+      GoNext();
+    }
+  }
+}
 
 
 

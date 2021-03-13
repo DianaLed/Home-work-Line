@@ -33,9 +33,10 @@ public:
   {
     return (Value == tm.Value);
   }
-  bool operator>(const TItemValue& tm)
+  bool operator>(const TDatValue& tm)
   {
-    return Value > tm.Value;
+    // return Value > tm.Value;
+    return true;
   }
   friend ostream& operator<<(ostream& os, TItemValue& tm)
   {

@@ -27,5 +27,10 @@ public:
     pNext = p.pNext;
     return *this;
   }
+  bool operator> (const TDatLink& p)
+  {
+    if (*pValue > *p.pValue) return true;
+    return 0;
+  }
   friend class TDatList;
 };
