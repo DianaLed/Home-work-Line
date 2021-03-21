@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include "tdatvalue.h"
 
@@ -27,11 +28,11 @@ public:
   {
     return (Coeff == tm.Coeff) && (Index == tm.Index);
   }
-  bool operator>(const TDatValue& tm) //пергрузка оператора сравнения для производного класса
+  bool operator>(const TMonom& tm)
   {
-    const TDatValue* pTM = &tm;
-    const TMonom* pTM2 = reinterpret_cast<const TMonom*>(pTM);
-    return Index > pTM2->Index;
+    if(Index > tm.Index)
+    return 1;
+    return 0;
   }
 
   friend ostream& operator<<(ostream& os, TMonom& tm)

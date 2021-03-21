@@ -11,7 +11,7 @@ TPolinom::TPolinom(int monoms[][2], int km)
   }
 }
 
-TPolinom::TPolinom(TPolinom& q)
+TPolinom::TPolinom(TPolinom& q) //???
 {
   PTMonom pm = new TMonom(0, 1);
   for (q.Reset(); !q.IsListEnded(); q.GoNext())
@@ -21,105 +21,168 @@ TPolinom::TPolinom(TPolinom& q)
   }
 }
 
+bool can_sum_monom(PTMonom a, PTMonom b) {
+  int ia = a->GetIndex(), ib = b->GetIndex();
+  if (ia == ib) return 1;
+  return 0;
+}
+PTMonom sum_monom(PTMonom a, PTMonom b) {
+  int ires=a->GetCoeff() + b->GetCoeff();
+  PTMonom res=new TMonom();
+  res->SetCoeff(ires);
+  res->SetIndex(a->GetIndex());
+  return res;
+}
 
-TPolinom& TPolinom::operator+(TPolinom& q)
+TPolinom TPolinom::operator+(TPolinom& q)
 {
-  TPolinom res=*this;
-  TPolinom dop;
-  PTMonom max;
-  PTMonom sum = nullptr;
-  for (q.Reset(); !q.IsListEnded(); q.GoNext()) {
-    res.InsLast(q.GetMonom());
-  }
-  q.GoNext();
-  res.InsLast(q.GetMonom());
-  //обьединили два полинома в один
-  cout << res << endl;
-  res.sortPolinm();
-  cout << res << endl;
-  //мы имеем единый отсорированный список в dop
-  //в res у нас пусто
-  //само сложение
-  while (!dop.IsEmpty()) {
-    dop.Reset();
-    max = dop.GetMonom();
-    dop.GoNext();
-    //если первое число больше
-    if (max > dop.GetMonom()) {
-      res.InsLast(max);
-      dop.DelFirst();
-    }
-    else 
-      //сложение если равные индексы (while, так как их может быть больше 2х)
-    { 
-      while ((max->GetIndex() == dop.GetMonom()->GetIndex())&& dop.GetListLength()!=0) {
-        max->SetCoeff(max->GetCoeff() + dop.GetMonom()->GetCoeff()); //сумируем коэф
-        dop.DelFirst();
-        cout << dop << "\n";
-        cout << dop.GetListLength() << "-listlen\n";
-        //надо проверить следующие элементы
-      }
-      //если при сложении получился не 0, то добавляем
-      if (max->GetCoeff() != 0) {
-        sum->SetIndex(max->GetIndex());//в сумму забиваем индексы
-        sum->SetCoeff(max->GetCoeff());//в сумму забиваем саму сумму
-        res.InsLast(sum);//добавляем в результат
-      }
-    }
-  }
-  //если в доп вдруг остался один элемент
-  if (dop.GetListLength() == 1) {
-    dop.Reset();
-    res.InsLast(dop.GetMonom());
-    dop.DelCurrent();
-  }
-  //теперь в допе ничего нет, можно радоваться
+  TPolinom res;
+  PTMonom sum;
+  //for (int i = 0; i < ListLen; i++) { //проход по основному
+  //  SetCurrentPos(i);
+  //  //res+осн 
+  //  if (can_sum_monom(res.GetMonom(), GetMonom()))//res и осн 
+  //  { 
+  //    sum = sum_monom(res.GetMonom(), GetMonom()); //ссумируем
+  //    res.SetCurrentPos(res.GetListLength() - 1); //удаляем просумированный элемент
+  //    res.DelCurrent();
+  //    if (sum->GetCoeff() != 0) res.SetMonom(sum);
+  //  }
+  //  //res+sum
+  //  else { 
+  //    if(nom_q<q.GetListLength())
+  //      q.SetCurrentPos(i);
+  //      //q+осн
+  //      if (can_sum_monom(q.GetMonom(), GetMonom())) { 
+  //        sum = sum_monom(q.GetMonom(), GetMonom()); //сложили
+  //        //проверяем на сложение с последним эл из res
+  //        if (can_sum_monom(res.GetMonom(), sum)) { //сложить можно q и res
+  //          sum = sum_monom(res.GetMonom(), sum); //ссумируем
+  //          res.SetCurrentPos(res.GetListLength() - 1); //удаляем просумированный элемент
+  //          res.DelCurrent();
+  //        }
+  //        //добавляем результат в res
+  //        if (sum->GetCoeff() != 0) res.SetMonom(sum);
+  //      }
+  //      else { //res+q
+  //      //проверяем на сложение res и q
+  //        if (can_sum_monom(res.GetMonom(), q.GetMonom())) { //сложить можно
+  //          sum = sum_monom(res.GetMonom(), q.GetMonom()); //ссумируем
+  //          res.SetCurrentPos(res.GetListLength() - 1); //удаляем просумированный элемент
+  //          res.DelCurrent();
+  //          if (sum->GetCoeff() != 0) res.SetMonom(sum);
+  //        }
+  //      }
+  //    }
+  //  }
+  int ithis = 0, iq = 0;
+  Reset();
+  q.Reset();
 
-  //сложение полиномов
-  *this = res;
-  return *this;
+  if (*GetMonom() > *q.GetMonom()) { sum = GetMonom(); GoNext(); ithis++; }
+  else { sum = q.GetMonom(); q.GoNext(); iq++;}
+  res.SetMonom(sum);
+  
+  //складываем пока одна из цепочек не кончится
+  while ((ithis < GetListLength()&& iq< GetListLength())) {
+    //ищем самый большой моном
+    res.SetCurrentPos(res.GetListLength() - 1);
+    if (*GetMonom() > *q.GetMonom())
+      //и его добавляем в res
+      if (can_sum_monom(GetMonom(), res.GetMonom())) {
+        sum = sum_monom(GetMonom(), res.GetMonom());
+        res.DelCurrent();
+        if(sum->GetCoeff()!=0) res.SetMonom(sum);
+        GoNext();
+        ithis++;
+      }
+      else {
+        res.SetMonom(GetMonom());
+        GoNext();
+        ithis++;
+      }
+    else {
+      if (can_sum_monom(q.GetMonom(), res.GetMonom())) {
+        sum = sum_monom(q.GetMonom(), res.GetMonom());
+        res.DelCurrent();
+        if (sum->GetCoeff() != 0) res.SetMonom(sum);
+        q.GoNext();
+        iq++;
+      }
+      else {
+        res.SetMonom(q.GetMonom());
+        q.GoNext();
+        iq++;
+      }
+    }
+    if (res.GetListLength() == 0) {
+      if (ithis < GetListLength()) { res.SetMonom(GetMonom()); ithis++; GoNext();}
+      if (iq < q.GetListLength()) { res.SetMonom(q.GetMonom()); iq++; q.GoNext(); }
+    }
+  }
+  //когда одна из цепочек кончилась, мы добавляем вторую
+  while (ithis < GetListLength()) {
+    if (can_sum_monom(GetMonom(), res.GetMonom())) {
+      sum = sum_monom(GetMonom(), res.GetMonom());
+      res.DelCurrent();
+      if (sum->GetCoeff() != 0) res.SetMonom(sum);
+      GoNext();
+      ithis++;
+    }
+    else {
+      res.SetMonom(GetMonom());
+      GoNext();
+      ithis++;
+    }
+  }
+  while (iq < GetListLength()) {
+    if (can_sum_monom(q.GetMonom(), res.GetMonom())) {
+      sum = sum_monom(q.GetMonom(), res.GetMonom());
+      res.DelCurrent();
+      if (sum->GetCoeff() != 0) res.SetMonom(sum);
+      q.GoNext();
+      iq++;
+    }
+    else {
+      res.SetMonom(q.GetMonom());
+      q.GoNext();
+      iq++;
+    }
+  }
+  return res;
 }
 
 
 
-TPolinom& TPolinom::operator=(TPolinom& q)
+TPolinom& TPolinom::operator=(const TPolinom& q)
 {
-  DelList();
+    DelList();
+    TDatLink* cur = q.pFirst;
+    for (int i = 0; i < q.GetListLength(); i++) {
+      TMonom* mon = (TMonom*)cur->GetDatValue();
+      TDatValue* add = new TMonom(mon->GetCoeff(), mon->GetIndex());
+      InsLast(add);
+      cur = cur->GetNextLink();
+    }
+    return *this;
+ /* PTMonom pm=new TMonom;
   for (q.Reset(); !q.IsListEnded(); q.GoNext())
   {
-    PTMonom pm = q.GetMonom();
+    pm = q.GetMonom();
     InsLast(pm->GetCopy());
   }
   q.GoNext();
-  PTMonom pm = q.GetMonom();
+   pm = q.GetMonom();
   InsLast(pm->GetCopy());
-  return (*this);
-  //DelList();
-  //*this = q;
-  //return (*this);
-}
-
-void TPolinom::sortPolinm()
-{
-  PTDatValue max;
-    for (int j = 0; j < ListLen - 1; j++) { //ставим на это место max
-      SetCurrentPos(j);
-      max = pCurrLink->GetDatValue();
-      GoNext();
-      for (int i = j + 1; i < ListLen; i++) {
-        if (pCurrLink->GetDatValue() > max) //не сможем реализовать
-          change(j, i);
-          GoNext();
-      }
-    }
+  return (*this);*/
 }
 
 int get_one(int a) {
-  int res = a/100;
+  int res = a / 100;
   return res;
 }
 int get_two(int a) {
-  int res = a % 100-(a%10);
+  int res = a % 100 - (a % 10);
   return res;
 }
 int get_three(int a) {
@@ -170,8 +233,8 @@ ostream& operator<<(ostream& os, TPolinom& q)
       a = *(q.GetMonom());
       os << a << " ";
     }
-    a = *(q.GetMonom());
-    os << a << " ";
+    //a = *(q.GetMonom());
+    //os << a << " ";
   }
   return os;
 }
