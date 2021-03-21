@@ -17,7 +17,7 @@ public:
   TItemValue(int ival = 0) : Value(ival) { }
   virtual ~TItemValue() { }
   virtual TDatValue* GetCopy() // изготовить копию
-  { 
+  {
     TDatValue* temp = new TItemValue(Value);
     return temp;
   }
@@ -33,11 +33,11 @@ public:
   {
     return (Value == tm.Value);
   }
-  bool operator>(const TDatValue& tm)
-  {
-    // return Value > tm.Value;
-    return true;
-  }
+  //bool operator>(const TDatValue& tm)
+  //{
+  //  //return Value > tm.Value;
+  //  //return true;
+  //}
   friend ostream& operator<<(ostream& os, TItemValue& tm)
   {
     os << tm.Value;

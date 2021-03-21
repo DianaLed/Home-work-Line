@@ -3,7 +3,7 @@
 
 TDatList::TDatList()
 {
-  pFirst = pCurrLink= pPrevLink =pLast = NULL;
+  pFirst = pCurrLink = pPrevLink = pLast = NULL;
   CurrPos = 0;
   ListLen = 0;
 }
@@ -18,13 +18,13 @@ TDatList::TDatList(PTDatValue* listElems, int listElemsCount)
       zven[i]->pValue = listElems[i];
     }
     zven[listElemsCount - 1]->pNext = NULL;
-    for (int i = listElemsCount-2; i >=0; i--) {
+    for (int i = listElemsCount - 2; i >= 0; i--) {
       zven[i]->pNext = zven[i + 1];
     }
     ListLen = listElemsCount;
     CurrPos = 0;
     pFirst = zven[0];
-    pLast= zven[listElemsCount - 1];
+    pLast = zven[listElemsCount - 1];
     pCurrLink = pFirst;
     pPrevLink = pLast;
   }
@@ -37,96 +37,71 @@ TDatList::TDatList(PTDatValue* listElems, int listElemsCount)
   }
 }
 
-//TDatList& TDatList::operator=(TDatList& q)
-//{
-//  DelList();
-//  pFirst = q.pFirst;
-//  pLast = q.pLast;
-//  pCurrLink= q.pCurrLink;
-//  pPrevLink= q.pPrevLink;
-//  CurrPos= q.CurrPos;
-//  ListLen = q.ListLen;
-//  return *this;
-//}
-
 PTDatValue TDatList::GetDatValue(TLinkPos mode) const
 {
-  PTDatValue a=pCurrLink->pValue;
+  PTDatValue a = (PTDatValue)pCurrLink->GetDatValue();
   return a;
 }
 
 void TDatList::DelFirst(void)
 {
-  if (!IsEmpty()){
-    if (ListLen >1) {
+  if (!IsEmpty()) {
+    if (ListLen == 1) {
+      Reset();
+      delete pCurrLink;
+    }
+    else {
       Reset();
       GoNext();
       pFirst = pCurrLink;
-      delete pPrevLink->pNext;
-      pPrevLink->pNext=NULL;
-      pCurrLink = pFirst;
+      delete pPrevLink;
       pPrevLink = pLast;
+    }
       ListLen--;
-    }
-    else {
-      DelList();
-    }
-    }
   }
+}
 
 void TDatList::DelCurrent(void)
 {
   if (!IsEmpty()) {
-    if(CurrPos == 0|| ListLen==1) DelFirst();
+    if (CurrPos == 0) DelFirst();
     else
-    if (CurrPos == ListLen - 1) {
-      pLast = pPrevLink;
-      delete pCurrLink->pNext;
-      pCurrLink->pNext = NULL;
-      pLast->pNext = NULL;
-      ListLen--;
-      Reset();
-    } else {
-      pPrevLink->pNext = pCurrLink->pNext;
-      delete pCurrLink;
-      pCurrLink = pPrevLink->pNext;
-      ListLen--;
-    }
+      if (CurrPos == ListLen - 1) {
+        pLast = pPrevLink;
+        delete pCurrLink->pNext;
+        pCurrLink->pNext = NULL;
+        pLast->pNext = NULL;
+        ListLen--;
+        Reset();
+      }
+      else {
+        pPrevLink->pNext = pCurrLink->pNext;
+        delete pCurrLink;
+        pCurrLink = pPrevLink->pNext;
+        ListLen--;
+      }
   }
 }
 
 void TDatList::DelList(void)
 {
-  if (ListLen > 1) { //если много звеньев
-    for (int i = ListLen-1; i > 0; i--) {
-      SetCurrentPos(i);
-      delete pPrevLink->pNext;
-    }
-    SetCurrentPos(0);
-    delete pCurrLink;
-  }
-  else 
-  if(ListLen==1)
-  { //если одно звено
-    delete pCurrLink;
-  }
-  ListLen = 0;
-  CurrPos = 0;
+  for (Reset(); !IsEmpty(); DelFirst()) {}
 }
 
 int TDatList::SetCurrentPos(int pos)
 {
+  int res = 0;
   if (pos >= 0 && pos <= ListLen) { //если это реально сделать
     Reset();
-  // нулевое звено
-    while ((pos != CurrPos)&&(pCurrLink->pNext != NULL)) {
+    // нулевое звено
+    while ((pos != CurrPos) && (CurrPos <= ListLen)) {
       pPrevLink = pCurrLink;
       pCurrLink = pCurrLink->GetNextDatLink();
       CurrPos++;
+      res = 1;
     }
-    return 1;
   }
-  return 0;
+  return res;
 }
 
 int TDatList::GetCurrentPos(void) const
@@ -144,14 +119,15 @@ int TDatList::Reset(void)
 
 bool TDatList::IsListEnded(void) const
 {
-  if(pCurrLink==nullptr||(pCurrLink->pNext==NULL)) return true;
+  if (CurrPos==ListLen-1)//(pCurrLink->pNext==NULL)
+    return true;
   return false;
 }
 
 int TDatList::GoNext(void)
 {
-  if ((!IsListEnded())&&(!IsEmpty())) {
-    PTDatLink next = pCurrLink->pNext; //???
+  if ((!IsListEnded()) && (!IsEmpty())) {
+    PTDatLink next = pCurrLink->pNext;
     pPrevLink = pCurrLink;
     pCurrLink = next;
     CurrPos++;
@@ -187,13 +163,13 @@ void TDatList::InsLast(PTDatValue pVal)
     pPrevLink = pLast;
   }
   else {
-    PTDatLink* zven = new PTDatLink;
-    zven[0] = new TDatLink();
-    zven[0]->pValue = pVal;
-    zven[0]->pNext = NULL;
-    pLast->pNext = zven[0];
-    pLast = zven[0];
-    for (Reset(); pCurrLink != pLast; GoNext()) {}
+    PTDatLink zven = new TDatLink();
+    //PTDatLink* zven = new PTDatLink;
+    //*zven = new TDatLink();
+    zven->pValue = pVal;
+    zven->pNext = NULL;
+    pLast->pNext= zven;
+    pLast = zven;
   }
   ListLen++;
 }
@@ -220,25 +196,6 @@ void TDatList::change(int nom1, int nom2)
   SetCurrentPos(nom1);
   pCurrLink->pValue = b.pValue;
 }
-
-void TDatList::sortlist()
-{
-  TDatLink max;
-  for (int j = 0; j < ListLen-1; j++) { //ставим на это место max
-    SetCurrentPos(j);
-    max = *pCurrLink;
-    GoNext();
-    for (int i = j+1; i < ListLen; i++) {
-      if (*pCurrLink > max) //не сможем реализовать
-        change(j, i);
-      GoNext();
-    }
-  }
-}
-
-
-
-
 
 ostream& operator<<(ostream& os, TDatList& q)
 {

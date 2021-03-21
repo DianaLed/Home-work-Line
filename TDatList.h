@@ -1,6 +1,4 @@
 #pragma once
-#include <iostream>
-
 using namespace std;
 
 #include "TDatlink.h"
@@ -24,8 +22,6 @@ public:
   TDatList(PTDatValue* listElems, int listElemsCount);
   ~TDatList() { DelList(); }
 
-  //TDatList& operator=(TDatList& q);
-
   // доступ --------------------------------------------------------------
   PTDatValue GetDatValue(TLinkPos mode = CURRENT) const; // значение
   int GetListLength() const { return ListLen; } // к-во звеньев
@@ -47,7 +43,6 @@ public:
   void InsLast(PTDatValue pVal = nullptr); // вставить последним //указвать будет на последнее
   void InsCurrent(PTDatValue pVal = nullptr); // вставить перед текущим //указывает на вставленный
   void change(int nom1, int nom2);
-  void sortlist();
 
   // удаление звеньев
   void DelFirst(void); // удалить первое звено (#Л2) //указывать будет на 0е
